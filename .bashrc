@@ -199,7 +199,7 @@ _update_dotfiles() {
     (
         cd "$dotfiles_dir" || exit
         git pull --quiet 2>/dev/null && stow --restow . 2>/dev/null
-        date +%s > "$stamp_file"
+        date +%s >| "$stamp_file"
     ) &
     disown
 }
