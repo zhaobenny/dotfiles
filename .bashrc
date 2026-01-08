@@ -177,3 +177,30 @@ function set_win_title() {
 # 1. When a command is running, use the function above
 trap 'set_win_title' DEBUG
 
+# --- AUTO-UPDATE DOTFILES ---
+# Updates dotfiles from git and restows, runs in background with 1-hour throttle
+_update_dotfiles() {
+    local dotfiles_dir="$HOME/dotfiles"
+    local stamp_file="$dotfiles_dir/.last_update"
+    local throttle_seconds=3600  # 1 hour
+
+    # Skip if not a git repo or stow not installed
+    [[ -d "$dotfiles_dir/.git" ]] || return
+    command -v stow &>/dev/null || return
+
+    # Throttle: skip if updated recently
+    if [[ -f "$stamp_file" ]]; then
+        local last_update=$(cat "$stamp_file")
+        local now=$(date +%s)
+        (( now - last_update < throttle_seconds )) && return
+    fi
+
+    # Run update in background
+    (
+        cd "$dotfiles_dir" || exit
+        git pull --quiet 2>/dev/null && stow --restow . 2>/dev/null
+        date +%s > "$stamp_file"
+    ) &
+    disown
+}
+_update_dotfiles

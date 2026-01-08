@@ -1,6 +1,10 @@
-^\\.git$
-^\\.gitignore$
-\\.DS_Store$
+^\.git$
+^\.gitignore$
+^\.stow-local-ignore$
+^install\.sh$
+^\.last_update$
+^\.claude$
+\.DS_Store$
 ^README.*$
-LICENSE
-.*\\.log$
+^LICENSE$
+.*\.log$
