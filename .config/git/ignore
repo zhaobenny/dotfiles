@@ -1,0 +1,10 @@
+# Editors/IDEs
+.vscode/
+.idea/
+
+# AI tools
+.claude/
+**/.claude/settings.local.json
+
+# Cloud credentials
+.aws/
