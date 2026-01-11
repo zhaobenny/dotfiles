@@ -6,5 +6,6 @@
 .claude/
 **/.claude/settings.local.json
 
-# Cloud credentials
+#  credentials
 .aws/
+.env

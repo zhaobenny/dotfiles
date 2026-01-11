@@ -4,7 +4,7 @@ set -e
 DOTFILES_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 # Add packages here as needed
-PACKAGES=(stow git)
+PACKAGES=(stow git htop)
 
 # Detect package manager and install packages
 install_packages() {

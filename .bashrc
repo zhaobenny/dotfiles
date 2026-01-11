@@ -16,8 +16,8 @@ HISTCONTROL=ignoreboth
 shopt -s histappend
 
 # for setting history length see HISTSIZE and HISTFILESIZE in bash(1)
-HISTSIZE=1000
-HISTFILESIZE=2000
+HISTSIZE=9999
+HISTFILESIZE=9999
 
 # check the window size after each command and, if necessary,
 # update the values of LINES and COLUMNS.
@@ -178,11 +178,11 @@ function set_win_title() {
 trap 'set_win_title' DEBUG
 
 # --- AUTO-UPDATE DOTFILES ---
-# Updates dotfiles from git and restows, runs in background with 1-hour throttle
+# Updates dotfiles from git and restows, runs in background with 8-hour throttle
 _update_dotfiles() {
     local dotfiles_dir="$HOME/dotfiles"
     local stamp_file="$dotfiles_dir/.last_update"
-    local throttle_seconds=3600  # 1 hour
+    local throttle_seconds=28800  # 8 hours
 
     # Skip if not a git repo or stow not installed
     [[ -d "$dotfiles_dir/.git" ]] || return
