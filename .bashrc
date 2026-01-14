@@ -204,3 +204,9 @@ _update_dotfiles() {
     disown
 }
 _update_dotfiles
+
+if [ -f ~/.bashrc.local ]; then
+    source ~/.bashrc.local
+fi
+
+### END OF DOTFILES ###
