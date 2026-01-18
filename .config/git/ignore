@@ -5,6 +5,7 @@
 # AI tools
 .claude/
 **/.claude/settings.local.json
+CLAUDE.md
 
 #  credentials
 .aws/
