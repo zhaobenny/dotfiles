@@ -184,35 +184,33 @@ function set_win_title() {
 trap 'set_win_title' DEBUG
 
 # --- AUTO-UPDATE DOTFILES ---
-# Updates dotfiles from git and restows, runs in background with 8-hour throttle
+# Updates dotfiles from git and restows, runs in background with 24-hour throttle
 _update_dotfiles() {
     local dotfiles_dir="$HOME/dotfiles"
     local stamp_file="$dotfiles_dir/.last_update"
-    local throttle_seconds=28800  # 8 hours
+    local throttle_seconds=86400  # 24 hours
 
     # Skip if not a git repo or stow not installed
     [[ -d "$dotfiles_dir/.git" ]] || return
     command -v stow &>/dev/null || return
 
-    # Throttle: skip if updated recently
-    if [[ -f "$stamp_file" ]]; then
-        local last_update=$(cat "$stamp_file")
-        local now=$(date +%s)
-        (( now - last_update < throttle_seconds )) && return
+    # Throttle: skip if updated recently (use file mtime)
+    if [[ -f "$stamp_file" ]] && (( $(date +%s) - $(stat -c %Y "$stamp_file") < throttle_seconds )); then
+        return
     fi
 
     # Run update in background
     (
         cd "$dotfiles_dir" || exit
         git pull --quiet 2>/dev/null && stow --restow . 2>/dev/null
-        date +%s >| "$stamp_file"
+        touch "$stamp_file"
     ) &
     disown
 }
 _update_dotfiles
 
-if [ -f ~/.bashrc.local ]; then
-    source ~/.bashrc.local
-fi
 
-### END OF DOTFILES ###
+export PATH="$HOME/bin:$PATH"
+
+# Oracle CLI autocomplete (only if installed)
+[[ -e "$HOME/lib/oracle-cli/lib/python3.10/site-packages/oci_cli/bin/oci_autocomplete.sh" ]] && source "$HOME/lib/oracle-cli/lib/python3.10/site-packages/oci_cli/bin/oci_autocomplete.sh"
