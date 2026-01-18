@@ -1,13 +1,16 @@
-# Run ccusage monthly, installing bun temporarily if needed
-ccusage() {
-    local had_bun=true
-    if ! command -v bun &>/dev/null; then
-        had_bun=false
-        curl -fsSL https://bun.sh/install | bash
-        source ~/.bashrc
+# Run cctop, installing if needed (stays installed)
+cctop() {
+    if ! command -v cctop &>/dev/null; then
+        echo "Installing cctop..."
+        local os arch
+        case "$(uname -s)" in
+            Linux) os=linux ;; Darwin) os=darwin ;; *) echo "Unsupported OS"; return 1 ;;
+        esac
+        case "$(uname -m)" in
+            x86_64|amd64) arch=amd64 ;; aarch64|arm64) arch=arm64 ;; *) echo "Unsupported arch"; return 1 ;;
+        esac
+        mkdir -p ~/bin
+        curl -fsSL "https://github.com/zhaobenny/cctop/releases/latest/download/cctop-${os}-${arch}" -o ~/bin/cctop && chmod +x ~/bin/cctop
     fi
-    bun x ccusage monthly
-    if [[ "$had_bun" == false ]]; then
-        rm -rf ~/.bun
-    fi
+    command cctop "$@"
 }
