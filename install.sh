@@ -28,6 +28,7 @@ install_packages
 
 echo "Stowing dotfiles..."
 cd "$DOTFILES_DIR"
-stow --restow .
+stow --adopt .
+git checkout .
 
 echo "Done! Open a new shell to apply changes."
