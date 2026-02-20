@@ -10,3 +10,5 @@ CLAUDE.md
 #  credentials
 .aws/
 .env
+# Codex
+AGENTS.md
