@@ -212,5 +212,9 @@ _update_dotfiles
 
 export PATH="$HOME/bin:$PATH"
 
+# Bun
+export BUN_INSTALL="$HOME/.bun"
+export PATH="$BUN_INSTALL/bin:$PATH"
+
 # Oracle CLI autocomplete (only if installed)
 [[ -e "$HOME/lib/oracle-cli/lib/python3.10/site-packages/oci_cli/bin/oci_autocomplete.sh" ]] && source "$HOME/lib/oracle-cli/lib/python3.10/site-packages/oci_cli/bin/oci_autocomplete.sh"

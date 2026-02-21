@@ -4,7 +4,7 @@ set -e
 DOTFILES_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 # Add packages here as needed
-PACKAGES=(stow git htop ripgrep)
+PACKAGES=(stow git htop ripgrep curl unzip)
 
 # Detect package manager and install packages
 install_packages() {
@@ -23,8 +23,15 @@ install_packages() {
     fi
 }
 
+install_bun() {
+    echo "Installing bun..."
+    curl -fsSL https://bun.sh/install | bash
+}
+
 echo "Installing packages: ${PACKAGES[*]}"
 install_packages
+
+install_bun
 
 echo "Stowing dotfiles..."
 cd "$DOTFILES_DIR"
