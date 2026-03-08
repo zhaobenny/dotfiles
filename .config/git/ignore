@@ -4,6 +4,7 @@
 
 # AI tools
 .claude/
+.codex/
 **/.claude/settings.local.json
 CLAUDE.md
 
