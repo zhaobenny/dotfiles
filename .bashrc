@@ -2,6 +2,27 @@
 # see /usr/share/doc/bash/examples/startup-files (in the package bash-doc)
 # for examples
 
+# Add a directory to PATH if it exists and isn't already present.
+path_prepend_if_exists() {
+    [ -d "$1" ] || return
+    case ":$PATH:" in
+        *":$1:"*) ;;
+        *) PATH="$1:$PATH" ;;
+    esac
+}
+
+# Ensure Go is on PATH
+path_prepend_if_exists "/usr/local/go/bin"
+path_prepend_if_exists "$HOME/go/bin"
+
+# Bun (needed in non-interactive shells too)
+if [ -d "$HOME/.bun/bin" ]; then
+    export BUN_INSTALL="$HOME/.bun"
+    path_prepend_if_exists "$BUN_INSTALL/bin"
+fi
+
+export PATH
+
 # If not running interactively, don't do anything
 case $- in
     *i*) ;;
@@ -210,11 +231,8 @@ _update_dotfiles() {
 _update_dotfiles
 
 
-export PATH="$HOME/bin:$PATH"
-
-# Bun
-export BUN_INSTALL="$HOME/.bun"
-export PATH="$BUN_INSTALL/bin:$PATH"
+path_prepend_if_exists "$HOME/bin"
+export PATH
 
 # Oracle CLI autocomplete (only if installed)
 [[ -e "$HOME/lib/oracle-cli/lib/python3.10/site-packages/oci_cli/bin/oci_autocomplete.sh" ]] && source "$HOME/lib/oracle-cli/lib/python3.10/site-packages/oci_cli/bin/oci_autocomplete.sh"
