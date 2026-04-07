@@ -7,9 +7,9 @@
 .codex/
 **/.claude/settings.local.json
 CLAUDE.md
+AGENTS.md
+.codex
 
 #  credentials
 .aws/
 .env
-# Codex
-AGENTS.md
