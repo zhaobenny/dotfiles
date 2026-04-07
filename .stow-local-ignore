@@ -4,6 +4,7 @@
 ^install\.sh$
 ^\.last_update$
 ^\.claude$
+^\.codex$
 \.DS_Store$
 ^README.*$
 ^LICENSE$
