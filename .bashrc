@@ -184,14 +184,22 @@ shopt -s cdspell 2> /dev/null
 export PATH="$PATH:/usr/local/bin"
 export AWS_PROFILE=org
 
-# Lazy-load NVM - only loads when nvm/node/npm/npx is first called
+# Lazy-load Node tooling and let npm fall back to pnpm.
 export NVM_DIR="$HOME/.nvm"
 if [[ -d "$NVM_DIR" ]]; then
-    _load_nvm() { unset -f nvm node npm npx; [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"; }
-    nvm() { _load_nvm; nvm "$@"; }
-    node() { _load_nvm; node "$@"; }
-    npm() { _load_nvm; npm "$@"; }
-    npx() { _load_nvm; npx "$@"; }
+    _load_nvm() { [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"; }
+    nvm() { unset -f nvm; _load_nvm; nvm "$@"; }
+    node() { unset -f node; _load_nvm; command node "$@"; }
+    npx() { unset -f npx; _load_nvm; command npx "$@"; }
+    npm() {
+        unset -f npm
+        _load_nvm
+        if type -P pnpm >/dev/null 2>&1; then
+            command pnpm "$@"
+        else
+            command npm "$@"
+        fi
+    }
 fi
 
 # --- WINDOWS TERMINAL TITLE CONFIGURATION ---
