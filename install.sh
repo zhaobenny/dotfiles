@@ -1,5 +1,5 @@
-#!/bin/bash
-set -e
+#!/usr/bin/env bash
+set -euo pipefail
 
 DOTFILES_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
@@ -24,6 +24,11 @@ install_packages() {
 }
 
 install_bun() {
+    if command -v bun &>/dev/null; then
+        echo "bun already installed"
+        return
+    fi
+
     echo "Installing bun..."
     curl -fsSL https://bun.sh/install | bash
 }
@@ -35,7 +40,10 @@ install_bun
 
 echo "Stowing dotfiles..."
 cd "$DOTFILES_DIR"
-stow --adopt .
-git checkout .
+if ! stow --target="$HOME" --restow .; then
+    echo "Error: stow reported conflicts in $HOME."
+    echo "Back up or remove the conflicting files, then rerun ./install.sh."
+    exit 1
+fi
 
 echo "Done! Open a new shell to apply changes."

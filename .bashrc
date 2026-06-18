@@ -11,6 +11,42 @@ path_prepend_if_exists() {
     esac
 }
 
+# Return a file's mtime across GNU/BSD `stat`.
+file_mtime() {
+    [ -e "$1" ] || return 1
+
+    if stat -c %Y "$1" >/dev/null 2>&1; then
+        stat -c %Y "$1"
+    else
+        stat -f %m "$1"
+    fi
+}
+
+append_prompt_command() {
+    local command="$1"
+
+    if [[ -z "${PROMPT_COMMAND:-}" ]]; then
+        PROMPT_COMMAND="$command"
+    elif [[ "$PROMPT_COMMAND" != *"$command"* ]]; then
+        PROMPT_COMMAND="${PROMPT_COMMAND}"$'\n'"$command"
+    fi
+}
+
+append_debug_trap() {
+    local command="$1"
+    local current_trap
+
+    current_trap=$(trap -p DEBUG)
+    current_trap=${current_trap#trap -- \'}
+    current_trap=${current_trap%\' DEBUG}
+
+    if [[ -z "$current_trap" ]]; then
+        trap "$command" DEBUG
+    elif [[ "$current_trap" != *"$command"* ]]; then
+        trap "${current_trap}"$'\n'"$command" DEBUG
+    fi
+}
+
 # Ensure Go is on PATH
 path_prepend_if_exists "/usr/local/go/bin"
 path_prepend_if_exists "$HOME/go/bin"
@@ -85,12 +121,17 @@ fi
 unset color_prompt force_color_prompt
 
 # enable color support of ls and also add handy aliases
-if [ -x /usr/bin/dircolors ]; then
+if command -v dircolors >/dev/null 2>&1; then
     test -r ~/.dircolors && eval "$(dircolors -b ~/.dircolors)" || eval "$(dircolors -b)"
-    alias ls='ls --color=auto'
-    #alias dir='dir --color=auto'
-    #alias vdir='vdir --color=auto'
+fi
 
+if ls --color=auto >/dev/null 2>&1; then
+    alias ls='ls --color=auto'
+elif ls -G >/dev/null 2>&1; then
+    alias ls='ls -G'
+fi
+
+if printf 'x\n' | grep --color=auto -q 'x' >/dev/null 2>&1; then
     alias grep='grep --color=auto'
     alias fgrep='fgrep --color=auto'
     alias egrep='egrep --color=auto'
@@ -155,8 +196,13 @@ bind "set mark-symlinked-directories on"
 # Save multi-line commands as one command
 shopt -s cmdhist
 
-# Record each line as it gets issued, sets tab title
-PROMPT_COMMAND='history -a; echo -ne "\033]0;${PWD##*/}\007"'
+# Record each line as it gets issued and set the tab title without clobbering
+# other prompt hooks.
+save_history_and_set_title() {
+    history -a
+    printf '\033]0;%s\007' "${PWD##*/}"
+}
+append_prompt_command "save_history_and_set_title"
 
 
 # Don't record some commands
@@ -209,30 +255,51 @@ function set_win_title() {
   printf "\033]0;%s\007" "$BASH_COMMAND"
 }
 
-# 1. When a command is running, use the function above
-trap 'set_win_title' DEBUG
+# 1. When a command is running, use the function above without replacing
+# any existing DEBUG trap handlers.
+append_debug_trap "set_win_title"
 
 # --- AUTO-UPDATE DOTFILES ---
 # Updates dotfiles from git and restows, runs in background with 24-hour throttle
 _update_dotfiles() {
     local dotfiles_dir="$HOME/dotfiles"
     local stamp_file="$dotfiles_dir/.last_update"
+    local lock_dir="$dotfiles_dir/.last_update.lock"
+    local log_file="$dotfiles_dir/.last_update.log"
     local throttle_seconds=86400  # 24 hours
+    local now
+    local stamp_mtime
 
     # Skip if not a git repo or stow not installed
     [[ -d "$dotfiles_dir/.git" ]] || return
+    command -v git &>/dev/null || return
     command -v stow &>/dev/null || return
 
     # Throttle: skip if updated recently (use file mtime)
-    if [[ -f "$stamp_file" ]] && (( $(date +%s) - $(stat -c %Y "$stamp_file") < throttle_seconds )); then
-        return
+    now=$(date +%s)
+    if [[ -f "$stamp_file" ]]; then
+        stamp_mtime=$(file_mtime "$stamp_file" 2>/dev/null || echo 0)
+        if (( now - stamp_mtime < throttle_seconds )); then
+            return
+        fi
     fi
 
     # Run update in background
     (
+        mkdir "$lock_dir" 2>/dev/null || exit 0
+        trap 'rmdir "$lock_dir"' EXIT
         cd "$dotfiles_dir" || exit
-        git pull --quiet 2>/dev/null && stow --restow . 2>/dev/null
-        touch "$stamp_file"
+
+        {
+            printf '[%s] starting dotfiles update\n' "$(date '+%Y-%m-%dT%H:%M:%S%z')"
+            if git pull --quiet && stow --target="$HOME" --restow .; then
+                touch "$stamp_file"
+                printf '[%s] dotfiles update succeeded\n' "$(date '+%Y-%m-%dT%H:%M:%S%z')"
+            else
+                printf '[%s] dotfiles update failed\n' "$(date '+%Y-%m-%dT%H:%M:%S%z')"
+                exit 1
+            fi
+        } >>"$log_file" 2>&1
     ) &
     disown
 }
@@ -241,6 +308,3 @@ _update_dotfiles
 
 path_prepend_if_exists "$HOME/bin"
 export PATH
-
-# Oracle CLI autocomplete (only if installed)
-[[ -e "$HOME/lib/oracle-cli/lib/python3.10/site-packages/oci_cli/bin/oci_autocomplete.sh" ]] && source "$HOME/lib/oracle-cli/lib/python3.10/site-packages/oci_cli/bin/oci_autocomplete.sh"

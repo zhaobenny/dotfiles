@@ -3,6 +3,8 @@
 ^\.stow-local-ignore$
 ^install\.sh$
 ^\.last_update$
+^\.last_update\.log$
+^\.last_update\.lock$
 ^\.claude$
 ^\.codex$
 \.DS_Store$
