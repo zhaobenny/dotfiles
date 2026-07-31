@@ -146,6 +146,13 @@ alias ll='ls -alF'
 alias la='ls -A'
 alias l='ls -CF'
 
+# Use bat for interactive file viewing while scripts continue to use cat.
+if command -v batcat >/dev/null 2>&1; then
+    alias cat='batcat --paging=auto'
+elif command -v bat >/dev/null 2>&1; then
+    alias cat='bat --paging=auto'
+fi
+
 # Add an "alert" alias for long running commands.  Use like so:
 #   sleep 10; alert
 alias alert='notify-send --urgency=low -i "$([ $? = 0 ] && echo terminal || echo error)" "$(history|tail -n1|sed -e '\''s/^\s*[0-9]\+\s*//;s/[;&|]\s*alert$//'\'')"'
