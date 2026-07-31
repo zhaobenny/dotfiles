@@ -176,6 +176,16 @@ if command -v zoxide >/dev/null 2>&1; then
     complete -o nospace -F _cd cd
 fi
 
+# Enable fuzzy history, file, and directory selection when fzf is installed.
+if command -v fzf >/dev/null 2>&1; then
+    if fzf --help 2>&1 | grep -q -- '--bash'; then
+        eval "$(fzf --bash)"
+    else
+        [ -r /usr/share/doc/fzf/examples/key-bindings.bash ] && . /usr/share/doc/fzf/examples/key-bindings.bash
+        [ -r /usr/share/doc/fzf/examples/completion.bash ] && . /usr/share/doc/fzf/examples/completion.bash
+    fi
+fi
+
 # Prevent file overwrite on stdout redirection
 # Use `>|` to force redirection to an existing file
 set -o noclobber
