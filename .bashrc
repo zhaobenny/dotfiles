@@ -66,11 +66,6 @@ case $- in
       *) return;;
 esac
 
-# Use zoxide as a smarter, drop-in replacement for cd when installed.
-if command -v zoxide >/dev/null 2>&1; then
-    eval "$(zoxide init bash --cmd cd)"
-fi
-
 # don't put duplicate lines or lines starting with space in the history.
 # See bash(1) for more options
 HISTCONTROL=ignoreboth
@@ -173,6 +168,12 @@ if ! shopt -oq posix; then
   elif [ -f /etc/bash_completion ]; then
     . /etc/bash_completion
   fi
+fi
+
+# Use zoxide as a smarter `cd`, while retaining normal Bash path completion.
+if command -v zoxide >/dev/null 2>&1; then
+    eval "$(zoxide init bash --cmd cd)"
+    complete -o nospace -F _cd cd
 fi
 
 # Prevent file overwrite on stdout redirection
