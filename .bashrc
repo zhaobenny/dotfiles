@@ -50,6 +50,7 @@ append_debug_trap() {
 # Ensure Go is on PATH
 path_prepend_if_exists "/usr/local/go/bin"
 path_prepend_if_exists "$HOME/go/bin"
+path_prepend_if_exists "$HOME/.local/bin"
 
 # Bun (needed in non-interactive shells too)
 if [ -d "$HOME/.bun/bin" ]; then
@@ -64,6 +65,11 @@ case $- in
     *i*) ;;
       *) return;;
 esac
+
+# Use zoxide as a smarter, drop-in replacement for cd when installed.
+if command -v zoxide >/dev/null 2>&1; then
+    eval "$(zoxide init bash --cmd cd)"
+fi
 
 # don't put duplicate lines or lines starting with space in the history.
 # See bash(1) for more options

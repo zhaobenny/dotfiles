@@ -33,8 +33,20 @@ install_bun() {
     curl -fsSL https://bun.sh/install | bash
 }
 
+install_zoxide() {
+    if command -v zoxide &>/dev/null; then
+        echo "zoxide already installed"
+        return
+    fi
+
+    echo "Installing zoxide..."
+    curl -sSfL https://raw.githubusercontent.com/ajeetdsouza/zoxide/main/install.sh | sh
+}
+
 echo "Installing packages: ${PACKAGES[*]}"
 install_packages
+
+install_zoxide
 
 install_bun
 
