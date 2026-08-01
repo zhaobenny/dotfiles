@@ -327,3 +327,9 @@ _update_dotfiles
 
 path_prepend_if_exists "$HOME/bin"
 export PATH
+
+# Keep machine-specific paths and secrets in ~/.bashrc.local so they stay
+# local to this host, the same way ~/.bash_aliases.local works for aliases.
+if [ -f ~/.bashrc.local ]; then
+    . ~/.bashrc.local
+fi
