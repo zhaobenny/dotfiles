@@ -1,0 +1,4 @@
+# Global pnpm config (pnpm >= 11 reads ~/.config/pnpm/config.yaml).
+# Supply-chain cooldown: only install package versions published >= 7 days ago.
+# Unit is minutes: 7 * 24 * 60.
+minimumReleaseAge: 10080

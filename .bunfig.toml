@@ -1,0 +1,6 @@
+# Global bun config (~/.bunfig.toml), merged with any project-local bunfig.toml.
+
+[install]
+# Supply-chain cooldown: only install package versions published >= 7 days ago.
+# Unit is seconds: 7 * 24 * 60 * 60.
+minimumReleaseAge = 604800
