@@ -43,6 +43,20 @@ install_zoxide() {
     curl -sSfL https://raw.githubusercontent.com/ajeetdsouza/zoxide/main/install.sh | sh
 }
 
+install_agent_skills() {
+    local target
+    local skill_targets=(
+        "$HOME/.agents/skills"
+        "$HOME/.claude/skills"
+    )
+
+    for target in "${skill_targets[@]}"; do
+        mkdir -p "$target"
+        echo "Stowing agent skills into $target..."
+        stow --dir="$DOTFILES_DIR/.agents" --target="$target" --restow skills
+    done
+}
+
 echo "Installing packages: ${PACKAGES[*]}"
 install_packages
 
@@ -57,5 +71,7 @@ if ! stow --target="$HOME" --restow .; then
     echo "Back up or remove the conflicting files, then rerun ./install.sh."
     exit 1
 fi
+
+install_agent_skills
 
 echo "Done! Open a new shell to apply changes."

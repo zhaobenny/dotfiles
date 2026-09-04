@@ -6,6 +6,7 @@
 ^\.last_update\.log$
 ^\.last_update\.lock$
 ^\.claude$
+^\.agents$
 ^\.codex$
 \.DS_Store$
 ^README.*$
