@@ -1,6 +1,26 @@
 # Global bun config (~/.bunfig.toml), merged with any project-local bunfig.toml.
 
 [install]
-# Supply-chain cooldown: only install package versions published >= 7 days ago.
-# Unit is seconds: 7 * 24 * 60 * 60.
-minimumReleaseAge = 604800
+# Supply-chain cooldown: only install package versions published >= 24 hours ago.
+# Unit is seconds: 24 * 60 * 60.
+minimumReleaseAge = 86400
+
+# Keep trusted coding CLIs available immediately, including their native binaries.
+minimumReleaseAgeExcludes = [
+  "@openai/codex",
+  "@openai/codex-darwin-arm64",
+  "@openai/codex-darwin-x64",
+  "@openai/codex-linux-arm64",
+  "@openai/codex-linux-x64",
+  "@openai/codex-win32-arm64",
+  "@openai/codex-win32-x64",
+  "@anthropic-ai/claude-code",
+  "@anthropic-ai/claude-code-darwin-arm64",
+  "@anthropic-ai/claude-code-darwin-x64",
+  "@anthropic-ai/claude-code-linux-arm64",
+  "@anthropic-ai/claude-code-linux-arm64-musl",
+  "@anthropic-ai/claude-code-linux-x64",
+  "@anthropic-ai/claude-code-linux-x64-musl",
+  "@anthropic-ai/claude-code-win32-arm64",
+  "@anthropic-ai/claude-code-win32-x64",
+]
