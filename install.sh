@@ -57,12 +57,18 @@ install_agent_skills() {
     done
 }
 
-echo "Installing packages: ${PACKAGES[*]}"
-install_packages
-
-install_zoxide
-
-install_bun
+if [[ -r /etc/os-release ]] && ( . /etc/os-release; [[ "${ID:-}" == nixos ]] ); then
+    echo "NixOS detected; manage packages, Bun and zoxide through Nix."
+    if ! command -v stow &>/dev/null; then
+        echo "Error: install stow through Nix before running this script."
+        exit 1
+    fi
+else
+    echo "Installing packages: ${PACKAGES[*]}"
+    install_packages
+    install_zoxide
+    install_bun
+fi
 
 echo "Stowing dotfiles..."
 cd "$DOTFILES_DIR"
