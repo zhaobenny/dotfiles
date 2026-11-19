@@ -282,6 +282,7 @@ append_debug_trap "set_win_title"
 # Updates dotfiles from git and restows, runs in background with 24-hour throttle
 _update_dotfiles() {
     local dotfiles_dir="$HOME/dotfiles"
+    [[ -d "$dotfiles_dir/.git" ]] || dotfiles_dir="$HOME/.dotfiles"
     local stamp_file="$dotfiles_dir/.last_update"
     local lock_dir="$dotfiles_dir/.last_update.lock"
     local log_file="$dotfiles_dir/.last_update.log"
