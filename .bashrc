@@ -311,7 +311,9 @@ _update_dotfiles() {
 
         {
             printf '[%s] starting dotfiles update\n' "$(date '+%Y-%m-%dT%H:%M:%S%z')"
-            if git pull --quiet && stow --target="$HOME" --restow .; then
+            if GIT_TERMINAL_PROMPT=0 GIT_ASKPASS=/bin/false SSH_ASKPASS=/bin/false \
+                GIT_SSH_COMMAND='ssh -o BatchMode=yes' git pull --quiet --ff-only && \
+                stow --target="$HOME" --restow .; then
                 touch "$stamp_file"
                 printf '[%s] dotfiles update succeeded\n' "$(date '+%Y-%m-%dT%H:%M:%S%z')"
             else
