@@ -8,7 +8,13 @@ PACKAGES=(stow git htop ripgrep curl unzip fzf bat)
 
 # Detect package manager and install packages
 install_packages() {
-    if command -v apt-get &>/dev/null; then
+    if [[ "$(uname -s)" == Darwin ]]; then
+        if ! command -v brew &>/dev/null; then
+            echo "Error: install Homebrew and add it to PATH before running this script."
+            exit 1
+        fi
+        brew install "${PACKAGES[@]}"
+    elif command -v apt-get &>/dev/null; then
         sudo apt-get update
         sudo apt-get install -y "${PACKAGES[@]}"
     elif command -v dnf &>/dev/null; then
